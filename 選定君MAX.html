@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>吊り金具選定君MAX - HAMILeX 300角トラス天吊り金具シミュレーター</title>
+  <style>
+    :root {
+      --bg-grad: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fef9c3 100%);
+      --card: #ffffff;
+      --card-sub: #f8fafc;
+      --border: #cbd5e1;
+      --border-soft: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --sky: #0284c7;
+      --sky-light: #e0f2fe;
+      --turquoise: #0d9488;
+      --turquoise-light: #ccfbf1;
+      --coral: #f43f5e;
+      --coral-light: #ffe4e6;
+      --yellow: #f59e0b;
+      --yellow-light: #fef3c7;
+      --mint: #10b981;
+      --mint-light: #d1fae5;
+      --shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-grad);
+      background-attachment: fixed;
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #0ea5e9 0%, #14b8a6 55%, #10b981 100%);
+      padding: 14px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25);
+      color: #fff;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-badge {
+      background: #facc15;
+      color: #713f12;
+      font-weight: 900;
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      letter-spacing: 0.04em;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    header .sub {
+      font-size: 0.8rem;
+      color: #e0f2fe;
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    button:hover {
+      border-color: var(--sky);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.14);
+    }
+    button.primary {
+      background: #facc15;
+      border-color: #eab308;
+      color: #422006;
+    }
+    button.primary:hover {
+      background: #fde047;
+    }
+    button.success {
+      background: #fff;
+      border-color: #fff;
+      color: #0f766e;
+    }
+    button.success:hover {
+      background: #f0fdfa;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 385px 1fr;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1580px;
+      margin: 0 auto;
+    }
+    @media (max-width: 1080px) {
+      .container { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1.5px solid rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      margin: 0 0 12px 0;
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: #0369a1;
+      border-bottom: 2px dashed #e2e8f0;
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+    }
+    .preset-group {
+      margin-bottom: 10px;
+    }
+    .preset-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-weight: 800;
+    }
+    .preset-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .preset-btn {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      background: var(--card-sub);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 8px;
+      color: var(--text);
+    }
+    .preset-btn.active {
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      border-color: #0284c7;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(14, 165, 233, 0.28);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-row.full { grid-column: 1 / -1; }
+    label {
+      font-size: 0.76rem;
+      color: #475569;
+      font-weight: 700;
+    }
+    input, select {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      width: 100%;
+      transition: 0.15s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      background: #fff;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+    .seg-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-soft);
+    }
+    .seg-tabs.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .seg-tabs button {
+      border: none;
+      background: transparent;
+      padding: 6px 4px;
+      font-size: 0.75rem;
+      border-radius: 7px;
+      color: var(--muted);
+      box-shadow: none;
+      transform: none;
+    }
+    .seg-tabs button.active {
+      background: #fff;
+      color: #0284c7;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+    }
+    .result-hero {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 780px) {
+      .result-hero { grid-template-columns: repeat(2, 1fr); }
+    }
+    .kpi {
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      border-top: 5px solid #0ea5e9;
+    }
+    .kpi:nth-child(2) { border-top-color: #14b8a6; }
+    .kpi:nth-child(3) { border-top-color: #f43f5e; }
+    .kpi:nth-child(4) { border-top-color: #f59e0b; }
+    .kpi .k-title {
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .kpi .k-val {
+      font-size: 1.22rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-top: 3px;
+    }
+    .kpi .k-sub {
+      font-size: 0.74rem;
+      color: #0284c7;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+    .kpi:nth-child(2) .k-sub { color: #0d9488; }
+    .kpi:nth-child(3) .k-sub { color: #e11d48; }
+    .kpi:nth-child(4) .k-sub { color: #d97706; }
+
+    .visual-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+    }
+    @media (max-width: 920px) {
+      .visual-grid { grid-template-columns: 1fr; }
+    }
+    .svg-box {
+      background: linear-gradient(180deg, #f8fafc 0%, #f0f9ff 100%);
+      border: 1.5px solid #bae6fd;
+      border-radius: 12px;
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    svg { width: 100%; height: auto; display: block; }
+    .alert {
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      border: 1.5px solid;
+      box-shadow: 0 3px 10px rgba(15,23,42,0.05);
+    }
+    .alert.ok { background: var(--mint-light); border-color: #34d399; color: #065f46; }
+    .alert.warn { background: var(--yellow-light); border-color: #fbbf24; color: #92430e; }
+    .alert.err { background: var(--coral-light); border-color: #fb7185; color: #9f1239; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border-soft);
+      padding: 8px 7px;
+      text-align: left;
+    }
+    th {
+      color: #0369a1;
+      font-weight: 800;
+      background: #f0f9ff;
+    }
+    tr.cand-row { cursor: pointer; transition: 0.12s; }
+    tr.cand-row:hover { background: #f0f9ff; }
+    tr.cand-row.selected { background: #bae6fd; font-weight: 700; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    .b-best { background: #10b981; color: #fff; }
+    .b-ok { background: #e2e8f0; color: #334155; }
+    .b-warn { background: #f59e0b; color: #fff; }
+    .saved-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .saved-item {
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #0284c7, #10b981);
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <h1>吊り金具選定君MAX</h1>
+        <span class="brand-badge">PRO EDITION</span>
+      </div>
+      <div class="sub">HAMILeX 300角トラス天吊り金具 選定・穴位置シミュレーター（CH-1B / CHパイプ / CH-63B・CH-93B）</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="primary" onclick="copyCurrentSpec()">📋 施工指示テキストコピー</button>
+    <button class="success" onclick="addToProjectList()">＋ 検討リストに追加</button>
+  </div>
+</header>
+
+<div class="container">
+  <!-- 左側：入力パネル -->
+  <div>
+    <div class="card">
+      <h2><span><span class="step-pill">STEP 1</span>モニタークイック選択・スペック</span></h2>
+
+      <div class="preset-group">
+        <div class="preset-label">NEC ディスプレイ</div>
+        <div class="preset-btns" id="necPresets"></div>
+      </div>
+
+      <div class="preset-group">
+        <div class="preset-label">SHARP ディスプレイ</div>
+        <div class="preset-btns" id="sharpPresets"></div>
+      </div>
+
+      <div class="form-grid" style="margin-top:10px;">
+        <div class="form-row full">
+          <label>設置場所メモ・モニター型番</label>
+          <input type="text" id="modelName" value="LCD-ME552" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>画面サイズ (V型)</label>
+          <input type="number" id="inch" value="55" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>モニター質量 (kg)</label>
+          <input type="number" id="weight" step="0.1" value="17.6" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>モニター横幅 W (mm)</label>
+          <input type="number" id="monW" value="1240" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>モニター高さ H (mm)</label>
+          <input type="number" id="monH" value="713" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>VESA 横ピッチ (mm)</label>
+          <input type="number" id="vesaW" value="300" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>VESA 縦ピッチ (mm)</label>
+          <input type="number" id="vesaH" value="300" oninput="recalc()" />
+        </div>
+        <div class="form-row full">
+          <label>テレビ取付金具 (CH-63B / CH-93B)</label>
+          <select id="bracketMode" onchange="recalc()">
+            <option value="auto">自動判定（75V以上 / 80kg超 / VESA600超でCH-93B）</option>
+            <option value="CH-63B">CH-63B 固定（耐荷重80kg / 標準）</option>
+            <option value="CH-93B">CH-93B 固定（耐荷重140kg / 大型ワイド）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span><span class="step-pill">STEP 2</span>300角トラス吊元・設置高さ条件</span></h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>トラス上端高さ FL+ (mm)</label>
+          <input type="number" id="trussTopHeight" step="10" value="4000" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>挟みプレート・スペーサー厚 (mm)</label>
+          <input type="number" id="spacerThick" step="1" value="0" oninput="setSpacerManual()" />
+        </div>
+
+        <div class="form-row full">
+          <label>CH-1B 設置場所（トラス上面乗せ ／ トラス下面乗せ）</label>
+          <div class="seg-tabs" id="trussMountTabs">
+            <button type="button" data-val="top" onclick="setTrussMount('top', this)">トラス上端（上面乗せ）</button>
+            <button type="button" class="active" data-val="bottom" onclick="setTrussMount('bottom', this)">トラス下面（下面乗せ）</button>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <label>挟み込み金具クイック入力（CH-1Bとトラスの間：上方向＋）</label>
+          <div class="preset-btns" id="spacerPresets">
+            <button type="button" class="preset-btn active" data-thick="0" onclick="setSpacerPreset(0, this)">なし (0mm)</button>
+            <button type="button" class="preset-btn" data-thick="5" onclick="setSpacerPreset(5, this)">300トラス専用プレート (5mm)</button>
+            <button type="button" class="preset-btn" data-thick="30" onclick="setSpacerPreset(30, this)">ダクター D1金具 (30mm)</button>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <label>希望モニター高さの基準（どこからの寸法か）</label>
+          <div class="seg-tabs three" id="heightOriginTabs">
+            <button type="button" class="active" data-val="floor" onclick="setHeightOrigin('floor', this)">床基準（FL+）</button>
+            <button type="button" data-val="trussTop" onclick="setHeightOrigin('trussTop', this)">トラス上面基準</button>
+            <button type="button" data-val="trussBottom" onclick="setHeightOrigin('trussBottom', this)">トラス下面基準</button>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <label>希望モニター高さの基準位置（モニターのどこを合わせるか）</label>
+          <div class="seg-tabs three" id="monRefTabs">
+            <button type="button" class="active" data-val="bottom" onclick="setMonRef('bottom', this)">モニター下端</button>
+            <button type="button" data-val="center" onclick="setMonRef('center', this)">モニター中心</button>
+            <button type="button" data-val="top" onclick="setMonRef('top', this)">モニター上端</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label id="targetHeightLabel">希望高さ FL+ (mm)</label>
+          <input type="number" id="targetMonHeight" step="10" value="2200" oninput="recalc()" />
+        </div>
+        <div class="form-row">
+          <label>VESA中心オフセット (mm)</label>
+          <input type="number" id="vesaOffsetY" step="5" value="0" title="モニター幾何学中心からVESA中心が上下にずれる場合に入力（上ずれ＋／下ずれ−）" oninput="recalc()" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>
+        <span><span class="step-pill">STEP 3</span>検討リスト（複数台まとめ）</span>
+        <button type="button" onclick="copyAllProjectList()" style="padding:4px 9px;font-size:0.74rem;background:#e0f2fe;border-color:#7dd3fc;color:#0369a1;">一括コピー</button>
+      </h2>
+      <div id="savedList" class="saved-list">
+        <div style="color:var(--muted);font-size:0.78rem;">右上の「＋ 検討リストに追加」で複数台の選定結果を保存できます。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右側：結果・図面パネル -->
+  <div>
+    <div id="alertBox"></div>
+
+    <div class="result-hero">
+      <div class="kpi">
+        <div class="k-title">選定パイプ品番</div>
+        <div class="k-val" id="resPipe">CH-1100B</div>
+        <div class="k-sub" id="resPipeLen">パイプ全長 1100mm</div>
+      </div>
+      <div class="kpi">
+        <div class="k-title">CH-1B 使用穴（3穴中）</div>
+        <div class="k-val" id="resCh1bHole">中穴 (130mm)</div>
+        <div class="k-sub" id="resOverlap">ボルト上側差込 150mm</div>
+      </div>
+      <div class="kpi">
+        <div class="k-title">パイプ上部 使用穴（4穴中）</div>
+        <div class="k-val" id="resPipeTopHole">上から 3番目</div>
+        <div class="k-sub" id="resPipeTopDist">パイプ上端から 150mm</div>
+      </div>
+      <div class="kpi">
+        <div class="k-title">パイプ下部 使用穴（2穴中）</div>
+        <div class="k-val" id="resPipeBotHole">下穴 (下端50mm)</div>
+        <div class="k-sub" id="resBracketName">テレビ金具: CH-63B</div>
+      </div>
+    </div>
+
+    <div class="visual-grid">
+      <!-- CAD風 全体断面図 -->
+      <div class="card">
+        <h2>設置全体 断面シミュレーション図（300角トラス〜床面）</h2>
+        <div class="svg-box">
+          <svg id="sceneSvg" viewBox="0 0 560 450"></svg>
+        </div>
+      </div>
+
+      <!-- 穴位置拡大図 -->
+      <div class="card">
+        <h2>CH-1B・パイプ上下 穴位置詳細図</h2>
+        <div class="svg-box">
+          <svg id="holeSvg" viewBox="0 0 420 485"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>全パイプ・穴位置組み合わせ 候補一覧（クリックで切替可能）</h2>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>判定</th>
+              <th>パイプ品番</th>
+              <th>CH-1B穴 (下端から)</th>
+              <th>パイプ上穴 (上端から)</th>
+              <th>パイプ下穴 (下端から)</th>
+              <th>CH-1B面〜VESA</th>
+              <th id="thActualHeight">仕上がりモニター高さ</th>
+              <th>目標との誤差</th>
+              <th>ボルト上差込</th>
+            </tr>
+          </thead>
+          <tbody id="candTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">コピーしました</div>
+
+<script>
+  const PRESETS = {
+    nec: [
+      { code: "LCD-E328", label: "E328 (32V)", inch: 32, w: 727, h: 424, weight: 5.7, vesaW: 100, vesaH: 100 },
+      { code: "LCD-E436", label: "E436 (43V)", inch: 43, w: 968, h: 559, weight: 8.7, vesaW: 200, vesaH: 200 },
+      { code: "LCD-ME552", label: "ME552 (55V)", inch: 55, w: 1240, h: 713, weight: 17.6, vesaW: 300, vesaH: 300 },
+      { code: "LCD-ME501", label: "ME501 (50V)", inch: 50, w: 1128, h: 649, weight: 21.8, vesaW: 400, vesaH: 400 },
+      { code: "LCD-ME651", label: "ME651 (65V)", inch: 65, w: 1462, h: 838, weight: 32.8, vesaW: 400, vesaH: 400 },
+      { code: "LCD-E988", label: "E988 (98V)", inch: 98, w: 2194, h: 1249, weight: 84.0, vesaW: 800, vesaH: 400 }
+    ],
+    sharp: [
+      { code: "PN-HW431", label: "HW431 (43V)", inch: 43, w: 968, h: 559, weight: 9.0, vesaW: 200, vesaH: 200 },
+      { code: "PN-HW752", label: "HW752 (75V)", inch: 75, w: 1684, h: 967, weight: 37.5, vesaW: 400, vesaH: 400 }
+    ]
+  };
+
+  const PIPES = [
+    { name: "CH-500B", len: 500 },
+    { name: "CH-800B", len: 800 },
+    { name: "CH-1100B", len: 1100 },
+    { name: "CH-1400B", len: 1400 },
+    { name: "CH-1700B", len: 1700 },
+    { name: "CH-2000B", len: 2000 },
+    { name: "CH-2300B", len: 2300 }
+  ];
+
+  // CH-1B 3穴（下端から80mm, 130mm, 180mm）
+  const CH1B_TOTAL_LEN = 230;
+  const CH1B_HOLES = [
+    { id: 1, name: "下穴", distFromBottom: 80 },
+    { id: 2, name: "中穴", distFromBottom: 130 },
+    { id: 3, name: "上穴", distFromBottom: 180 }
+  ];
+
+  // パイプ上部 4穴（上端から50mm間隔）
+  const PIPE_TOP_HOLES = [
+    { id: 1, name: "上から1番目", distFromTop: 50 },
+    { id: 2, name: "上から2番目", distFromTop: 100 },
+    { id: 3, name: "上から3番目", distFromTop: 150 },
+    { id: 4, name: "上から4番目", distFromTop: 200 }
+  ];
+
+  // パイプ下部 2穴（下端から50mm, 150mm）
+  const PIPE_BOT_HOLES = [
+    { id: 1, name: "下穴 (下端50mm)", shortName: "下穴", distFromBottom: 50 },
+    { id: 2, name: "上穴 (下端150mm)", shortName: "上穴", distFromBottom: 150 }
+  ];
+
+  const BRACKETS = {
+    "CH-63B": { name: "CH-63B", maxWeight: 80, maxVesaW: 600, dropFromBotBolt: 140 },
+    "CH-93B": { name: "CH-93B", maxWeight: 140, maxVesaW: 900, dropFromBotBolt: 165 }
+  };
+
+  let trussMountPos = "bottom"; // "top" (上面乗せ) or "bottom" (下面乗せ)
+  let heightOriginMode = "floor"; // "floor" | "trussTop" | "trussBottom"
+  let monRefMode = "bottom"; // "bottom" | "center" | "top"
+  let manualCandidateKey = null;
+  let currentBest = null;
+  let savedItems = [];
+
+  function initPresets() {
+    const necEl = document.getElementById("necPresets");
+    const sharpEl = document.getElementById("sharpPresets");
+
+    PRESETS.nec.forEach(p => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "preset-btn" + (p.code === "LCD-ME552" ? " active" : "");
+      btn.textContent = p.label;
+      btn.onclick = () => applyPreset(p, btn);
+      necEl.appendChild(btn);
+    });
+
+    PRESETS.sharp.forEach(p => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "preset-btn";
+      btn.textContent = p.label;
+      btn.onclick = () => applyPreset(p, btn);
+      sharpEl.appendChild(btn);
+    });
+  }
+
+  function applyPreset(p, btn) {
+    document.querySelectorAll("#necPresets .preset-btn, #sharpPresets .preset-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("modelName").value = p.code;
+    document.getElementById("inch").value = p.inch;
+    document.getElementById("weight").value = p.weight;
+    document.getElementById("monW").value = p.w;
+    document.getElementById("monH").value = p.h;
+    document.getElementById("vesaW").value = p.vesaW;
+    document.getElementById("vesaH").value = p.vesaH;
+    manualCandidateKey = null;
+    recalc();
+  }
+
+  function setTrussMount(val, btn) {
+    trussMountPos = val;
+    document.querySelectorAll("#trussMountTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    manualCandidateKey = null;
+    recalc();
+  }
+
+  function setHeightOrigin(val, btn) {
+    heightOriginMode = val;
+    document.querySelectorAll("#heightOriginTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const labelEl = document.getElementById("targetHeightLabel");
+    const inputEl = document.getElementById("targetMonHeight");
+    const thEl = document.getElementById("thActualHeight");
+
+    if (val === "floor") {
+      labelEl.textContent = "希望高さ（床基準 FL+ mm）";
+      thEl.textContent = "仕上がり高さ (FL+)";
+      if (parseFloat(inputEl.value) < 1500) inputEl.value = 2200;
+    } else if (val === "trussTop") {
+      labelEl.textContent = "希望下り寸法（トラス上面から mm）";
+      thEl.textContent = "仕上がり下り (上面基準)";
+      if (parseFloat(inputEl.value) > 1500) inputEl.value = 1500;
+    } else {
+      labelEl.textContent = "希望下り寸法（トラス下面から mm）";
+      thEl.textContent = "仕上がり下り (下面基準)";
+      if (parseFloat(inputEl.value) > 1500) inputEl.value = 1200;
+    }
+    manualCandidateKey = null;
+    recalc();
+  }
+
+  function setSpacerPreset(thick, btn) {
+    document.getElementById("spacerThick").value = thick;
+    document.querySelectorAll("#spacerPresets .preset-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    manualCandidateKey = null;
+    recalc();
+  }
+
+  function setSpacerManual() {
+    const val = parseFloat(document.getElementById("spacerThick").value);
+    document.querySelectorAll("#spacerPresets .preset-btn").forEach(b => {
+      b.classList.toggle("active", parseFloat(b.dataset.thick) === val);
+    });
+    manualCandidateKey = null;
+    recalc();
+  }
+
+  function setMonRef(val, btn) {
+    monRefMode = val;
+    document.querySelectorAll("#monRefTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    manualCandidateKey = null;
+    recalc();
+  }
+
+  function formatMetricValue(val, originMode) {
+    const rounded = Math.round(val);
+    if (originMode === "floor") return `FL+${rounded}mm`;
+    if (originMode === "trussTop") return `上面-${rounded}mm`;
+    return `下面-${rounded}mm`;
+  }
+
+  function recalc() {
+    const modelName = document.getElementById("modelName").value.trim() || "モニター";
+    const inch = parseFloat(document.getElementById("inch").value) || 55;
+    const weight = parseFloat(document.getElementById("weight").value) || 0;
+    const monW = parseFloat(document.getElementById("monW").value) || 1200;
+    const monH = parseFloat(document.getElementById("monH").value) || 700;
+    const vesaW = parseFloat(document.getElementById("vesaW").value) || 300;
+    const vesaH = parseFloat(document.getElementById("vesaH").value) || 300;
+    const bracketMode = document.getElementById("bracketMode").value;
+
+    // トラス高さ入力は「トラス上端 FL+」固定
+    const trussTopFL = parseFloat(document.getElementById("trussTopHeight").value) || 4000;
+    const trussBottomFL = trussTopFL - 300;
+    const spacerThick = parseFloat(document.getElementById("spacerThick").value) || 0;
+    const targetInputVal = parseFloat(document.getElementById("targetMonHeight").value) || 0;
+    const vesaOffsetY = parseFloat(document.getElementById("vesaOffsetY").value) || 0;
+
+    // CH-1Bベース取付面 FL+ の算出
+    // ・トラス上端（上面乗せ）: トラス上端 FL+ ＋ スペーサー厚
+    // ・トラス下面（下面乗せ）: トラス下面（下弦材・ラチス面）FL+ ＋ スペーサー厚
+    const mountBaseFL = trussMountPos === "top"
+      ? (trussTopFL + spacerThick)
+      : (trussBottomFL + spacerThick);
+
+    // 入力された希望モニター高さ（床基準 / トラス上面基準 / トラス下面基準）を床基準FL+に統一換算
+    let targetMonRefFL = targetInputVal;
+    if (heightOriginMode === "trussTop") {
+      targetMonRefFL = trussTopFL - targetInputVal;
+    } else if (heightOriginMode === "trussBottom") {
+      targetMonRefFL = trussBottomFL - targetInputVal;
+    }
+
+    // テレビ取付金具の選定
+    let selectedBracketKey = "CH-63B";
+    if (bracketMode === "CH-93B") {
+      selectedBracketKey = "CH-93B";
+    } else if (bracketMode === "auto") {
+      if (inch >= 75 || weight > 80 || vesaW > 600) {
+        selectedBracketKey = "CH-93B";
+      }
+    }
+    const bracket = BRACKETS[selectedBracketKey];
+
+    const candidates = [];
+    PIPES.forEach(pipe => {
+      CH1B_HOLES.forEach(ch1bHole => {
+        PIPE_TOP_HOLES.forEach(pTop => {
+          PIPE_BOT_HOLES.forEach(pBot => {
+            const ch1bMountToBolt = CH1B_TOTAL_LEN - ch1bHole.distFromBottom;
+            const effectivePipeSpan = pipe.len - pTop.distFromTop - pBot.distFromBottom;
+            const totalDrop = ch1bMountToBolt + effectivePipeSpan + bracket.dropFromBotBolt;
+
+            const actualVesaFL = mountBaseFL - totalDrop;
+            const actualCenterFL = actualVesaFL - vesaOffsetY;
+            const actualBottomFL = actualCenterFL - (monH / 2);
+            const actualTopFL = actualCenterFL + (monH / 2);
+
+            let actualRefFL = actualBottomFL;
+            if (monRefMode === "center") actualRefFL = actualCenterFL;
+            if (monRefMode === "top") actualRefFL = actualTopFL;
+
+            // 選択された基準（床 / トラス上面 / トラス下面）での仕上がり値
+            let actualOriginMetric = actualRefFL;
+            if (heightOriginMode === "trussTop") actualOriginMetric = trussTopFL - actualRefFL;
+            if (heightOriginMode === "trussBottom") actualOriginMetric = trussBottomFL - actualRefFL;
+
+            // 目標値との誤差（目標より低い/下がりすぎは＋、高い/浅いは−として表示）
+            const diff = actualOriginMetric - targetInputVal;
+            const absDiff = Math.abs(diff);
+
+            const isSafeInsertion = pTop.distFromTop >= 100 && effectivePipeSpan > 150;
+            const isTrussClear = actualTopFL <= trussBottomFL;
+            const penalty = (isSafeInsertion ? 0 : 35) + (pBot.id === 1 ? 0 : 8) + (isTrussClear ? 0 : 500);
+
+            const key = `${pipe.name}_${ch1bHole.id}_${pTop.id}_${pBot.id}`;
+            candidates.push({
+              key,
+              pipe,
+              ch1bHole,
+              pTop,
+              pBot,
+              ch1bMountToBolt,
+              effectivePipeSpan,
+              totalDrop,
+              actualVesaFL,
+              actualCenterFL,
+              actualRefFL,
+              actualBottomFL,
+              actualTopFL,
+              actualOriginMetric,
+              diff,
+              absDiff,
+              isSafeInsertion,
+              isTrussClear,
+              score: absDiff + penalty
+            });
+          });
+        });
+      });
+    });
+
+    candidates.sort((a, b) => a.score - b.score);
+
+    let chosen = candidates[0];
+    if (manualCandidateKey) {
+      const found = candidates.find(c => c.key === manualCandidateKey);
+      if (found) chosen = found;
+    }
+
+    currentBest = {
+      chosen,
+      modelName,
+      inch,
+      weight,
+      monW,
+      monH,
+      vesaW,
+      vesaH,
+      bracket,
+      trussMountPos,
+      heightOriginMode,
+      monRefMode,
+      trussBottomFL,
+      trussTopFL,
+      mountBaseFL,
+      spacerThick,
+      targetInputVal,
+      targetMonRefFL
+    };
+
+    // KPI更新
+    document.getElementById("resPipe").textContent = chosen.pipe.name;
+    document.getElementById("resPipeLen").textContent = `パイプ全長 ${chosen.pipe.len}mm`;
+    document.getElementById("resCh1bHole").textContent = `${chosen.ch1bHole.name} (下端${chosen.ch1bHole.distFromBottom}mm)`;
+    document.getElementById("resOverlap").textContent = `ボルト上側差込 ${chosen.pTop.distFromTop}mm`;
+    document.getElementById("resPipeTopHole").textContent = chosen.pTop.name;
+    document.getElementById("resPipeTopDist").textContent = `パイプ上端から ${chosen.pTop.distFromTop}mm`;
+    document.getElementById("resPipeBotHole").textContent = chosen.pBot.name;
+    document.getElementById("resBracketName").textContent = `テレビ金具: ${bracket.name} (耐荷重${bracket.maxWeight}kg)`;
+
+    // アラート判定
+    const alerts = [];
+    if (chosen.actualTopFL > trussBottomFL) {
+      alerts.push({ type: "err", msg: `⚠️ トラス干渉警告: モニター上端 (FL+${Math.round(chosen.actualTopFL)}mm) が300角トラス下端 (FL+${Math.round(trussBottomFL)}mm) に干渉します。長いパイプへ変更してください。` });
+    }
+    if (weight > bracket.maxWeight) {
+      alerts.push({ type: "err", msg: `⚠️ 耐荷重超過: モニター質量 ${weight}kg が ${bracket.name} の耐荷重 (${bracket.maxWeight}kg) を超えています。` });
+    }
+    if (vesaW > bracket.maxVesaW) {
+      alerts.push({ type: "err", msg: `⚠️ VESA幅超過: VESA横ピッチ ${vesaW}mm が ${bracket.name} の対応最大幅 (${bracket.maxVesaW}mm) を超えています。` });
+    }
+    if (!chosen.isSafeInsertion) {
+      alerts.push({ type: "warn", msg: `⚠️ 差込代注意: パイプ上穴が「上から1番目(50mm)」のため差込代が浅めです。可能であれば上から2番目(100mm)以上の穴をご検討ください。` });
+    }
+    if (chosen.actualBottomFL < 2000) {
+      alerts.push({ type: "warn", msg: `⚠️ 頭上クリアランス注意: モニター下端が FL+${Math.round(chosen.actualBottomFL)}mm です（通行エリアの場合は2,000mm以上推奨）。` });
+    }
+    if (alerts.length === 0) {
+      const mountPosText = trussMountPos === "top"
+        ? `トラス上端 FL+${Math.round(trussTopFL)}mm ＋ スペーサー ${spacerThick}mm ＝ CH-1B基準面 FL+${Math.round(mountBaseFL)}mm`
+        : `トラス下面 FL+${Math.round(trussBottomFL)}mm ＋ スペーサー ${spacerThick}mm ＝ CH-1B基準面 FL+${Math.round(mountBaseFL)}mm`;
+      const actualStr = formatMetricValue(chosen.actualOriginMetric, heightOriginMode);
+      alerts.push({
+        type: "ok",
+        msg: `✅ 適合OK（${mountPosText}）: 仕上がり ${actualStr}（目標差 ${chosen.diff >= 0 ? "+" : ""}${Math.round(chosen.diff)}mm / 下端 FL+${Math.round(chosen.actualBottomFL)}mm）`
+      });
+    }
+    document.getElementById("alertBox").innerHTML = alerts.map(a => `<div class="alert ${a.type}">${a.msg}</div>`).join("");
+
+    // 候補テーブル描画
+    const tbody = document.getElementById("candTableBody");
+    tbody.innerHTML = "";
+    candidates.slice(0, 15).forEach((c, idx) => {
+      const tr = document.createElement("tr");
+      tr.className = "cand-row" + (c.key === chosen.key ? " selected" : "");
+      tr.onclick = () => {
+        manualCandidateKey = c.key;
+        recalc();
+      };
+      const badge = !c.isTrussClear
+        ? `<span class="badge b-warn">トラス干渉</span>`
+        : (idx === 0
+          ? `<span class="badge b-best">最適推奨</span>`
+          : (c.isSafeInsertion ? `<span class="badge b-ok">候補</span>` : `<span class="badge b-warn">浅差込</span>`));
+      const diffStr = `${c.diff >= 0 ? "+" : ""}${Math.round(c.diff)} mm`;
+      const metricStr = formatMetricValue(c.actualOriginMetric, heightOriginMode);
+      tr.innerHTML = `
+        <td>${badge}</td>
+        <td><strong>${c.pipe.name}</strong></td>
+        <td>${c.ch1bHole.name} (${c.ch1bHole.distFromBottom}mm)</td>
+        <td>${c.pTop.name} (${c.pTop.distFromTop}mm)</td>
+        <td>${c.pBot.shortName} (${c.pBot.distFromBottom}mm)</td>
+        <td>${Math.round(c.totalDrop)} mm</td>
+        <td>${metricStr}</td>
+        <td><strong>${diffStr}</strong></td>
+        <td>${c.pTop.distFromTop} mm</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    drawSceneSvg(currentBest);
+    drawHoleSvg(currentBest);
+  }
+
+  function drawSceneSvg(data) {
+    const svg = document.getElementById("sceneSvg");
+    const {
+      chosen, trussMountPos, heightOriginMode, monRefMode,
+      trussBottomFL, trussTopFL, mountBaseFL, spacerThick,
+      monW, monH, bracket, modelName
+    } = data;
+
+    const maxFL = Math.max(mountBaseFL + 340, 4600);
+    const floorY = 415;
+    const topMargin = 28;
+    const scale = (floorY - topMargin) / maxFL;
+    const toY = (fl) => floorY - fl * scale;
+
+    const yTrussTop = toY(trussTopFL);
+    const yTrussBot = toY(trussBottomFL);
+    const yMountBase = toY(mountBaseFL);
+    const yVesa = toY(chosen.actualVesaFL);
+    const yMonTop = toY(chosen.actualTopFL);
+    const yMonBot = toY(chosen.actualBottomFL);
+    const cx = 275;
+
+    // 300角トラスのラチス描画
+    let trussLattice = "";
+    for (let x = 80; x < 445; x += 30) {
+      trussLattice += `<line x1="${x}" y1="${yTrussTop}" x2="${x+15}" y2="${yTrussBot}" stroke="#64748b" stroke-width="1.6"/>`;
+      trussLattice += `<line x1="${x+15}" y1="${yTrussBot}" x2="${x+30}" y2="${yTrussTop}" stroke="#64748b" stroke-width="1.6"/>`;
+    }
+
+    const drawMonW = Math.min(Math.max(monW * scale, 72), 205);
+    const drawMonH = Math.max(monH * scale, 38);
+
+    // スペーサー描画（トラスとCH-1Bの間：上面乗せ・下面乗せともに乗せる面の上側）
+    let spacerSvg = "";
+    if (spacerThick > 0) {
+      const spH = Math.max(spacerThick * scale, 4);
+      const spY = yMountBase;
+      spacerSvg = `<rect x="${cx - 28}" y="${spY}" width="56" height="${spH}" fill="#f59e0b" rx="1"/>`;
+    }
+
+    // CH-1Bベース板・受け筒（上面乗せ・下面乗せともに、それぞれの基準面＋スペーサーの上にベース板が載る）
+    const basePlateY = yMountBase - 6;
+    const sleeveTopY = yMountBase;
+    const sleeveH = Math.max(CH1B_TOTAL_LEN * scale, 16);
+
+    const trussRefText = trussMountPos === "top"
+      ? `300角トラス【上面乗せ・貫通】 (上端 FL+${Math.round(trussTopFL)}mm)`
+      : `300角トラス【下面乗せ】 (上端 FL+${Math.round(trussTopFL)} / 下面 FL+${Math.round(trussBottomFL)})`;
+
+    // 選択中の基準位置（モニター上端 / 中心 / 下端）のY座標とラベル
+    let targetLineY = yMonBot;
+    let monRefLabel = "モニター下端";
+    if (monRefMode === "center") {
+      targetLineY = (yMonTop + yMonBot) / 2;
+      monRefLabel = "モニター中心";
+    } else if (monRefMode === "top") {
+      targetLineY = yMonTop;
+      monRefLabel = "モニター上端";
+    }
+
+    // 基準寸法線（床基準 / トラス上面基準 / トラス下面基準）の強調表示
+    let customDimSvg = "";
+    if (heightOriginMode === "floor") {
+      const dimX = 480;
+      const midY = (targetLineY + floorY) / 2;
+      customDimSvg = `
+        <line x1="${cx + drawMonW/2 + 4}" y1="${targetLineY}" x2="${dimX + 10}" y2="${targetLineY}" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="${dimX}" y1="${targetLineY}" x2="${dimX}" y2="${floorY}" stroke="#ea580c" stroke-width="2.2"/>
+        <polygon points="${dimX},${targetLineY} ${dimX-4},${targetLineY+7} ${dimX+4},${targetLineY+7}" fill="#ea580c"/>
+        <polygon points="${dimX},${floorY} ${dimX-4},${floorY-7} ${dimX+4},${floorY-7}" fill="#ea580c"/>
+        <rect x="385" y="${midY - 19}" width="166" height="32" rx="6" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>
+        <text x="468" y="${midY - 6}" text-anchor="middle" fill="#c2410c" font-size="9.5" font-weight="bold">[床基準] ${monRefLabel}</text>
+        <text x="468" y="${midY + 8}" text-anchor="middle" fill="#ea580c" font-size="11" font-weight="900">FL+${Math.round(chosen.actualRefFL)}mm</text>
+      `;
+    } else {
+      const originY = heightOriginMode === "trussTop" ? yTrussTop : yTrussBot;
+      const originName = heightOriginMode === "trussTop" ? "トラス上面" : "トラス下面";
+      const dimX = 480;
+      const midY = (originY + targetLineY) / 2;
+      customDimSvg = `
+        <line x1="450" y1="${originY}" x2="${dimX + 10}" y2="${originY}" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="${cx + drawMonW/2 + 4}" y1="${targetLineY}" x2="${dimX + 10}" y2="${targetLineY}" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="${dimX}" y1="${originY}" x2="${dimX}" y2="${targetLineY}" stroke="#ea580c" stroke-width="2.2"/>
+        <polygon points="${dimX},${originY} ${dimX-4},${originY+7} ${dimX+4},${originY+7}" fill="#ea580c"/>
+        <polygon points="${dimX},${targetLineY} ${dimX-4},${targetLineY-7} ${dimX+4},${targetLineY-7}" fill="#ea580c"/>
+        <rect x="382" y="${midY - 19}" width="170" height="32" rx="6" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>
+        <text x="467" y="${midY - 6}" text-anchor="middle" fill="#c2410c" font-size="9.5" font-weight="bold">[${originName}基準] ${monRefLabel}</text>
+        <text x="467" y="${midY + 8}" text-anchor="middle" fill="#ea580c" font-size="11" font-weight="900">下り ${Math.round(chosen.actualOriginMetric)}mm</text>
+      `;
+    }
+
+    svg.innerHTML = `
+      <!-- 床面 -->
+      <line x1="20" y1="${floorY}" x2="540" y2="${floorY}" stroke="#475569" stroke-width="2.5"/>
+      <text x="26" y="${floorY + 17}" fill="#475569" font-size="11" font-weight="bold">FL ±0 (床面)</text>
+
+      <!-- 人物シルエット (1700mm基準) -->
+      <circle cx="88" cy="${toY(1610)}" r="10" fill="#94a3b8"/>
+      <rect x="76" y="${toY(1500)}" width="24" height="${750 * scale}" rx="7" fill="#94a3b8"/>
+      <line x1="83" y1="${toY(750)}" x2="81" y2="${floorY}" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/>
+      <line x1="93" y1="${toY(750)}" x2="95" y2="${floorY}" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/>
+      <text x="62" y="${toY(1750)}" fill="#64748b" font-size="10" font-weight="bold">H=1700</text>
+
+      <!-- 300角トラス -->
+      <rect x="75" y="${yTrussTop}" width="375" height="4.5" fill="#334155" rx="1"/>
+      <rect x="75" y="${yTrussBot - 4.5}" width="375" height="4.5" fill="#334155" rx="1"/>
+      ${trussLattice}
+      <text x="76" y="${Math.min(yTrussTop, basePlateY) - 7}" fill="#0369a1" font-size="10.5" font-weight="bold">${trussRefText}</text>
+
+      <!-- スペーサー（プレート/ダクター） -->
+      ${spacerSvg}
+
+      <!-- パイプ（CH-1B筒からモニターVESAまで） -->
+      <line x1="${cx}" y1="${sleeveTopY + 4}" x2="${cx}" y2="${yVesa - 6}" stroke="#475569" stroke-width="5.5"/>
+
+      <!-- CH-1B ベース & 筒 -->
+      <rect x="${cx - 24}" y="${basePlateY}" width="48" height="6" fill="#0284c7" rx="1"/>
+      <rect x="${cx - 9}" y="${sleeveTopY}" width="18" height="${sleeveH}" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5" rx="2"/>
+
+      <!-- テレビ金具 & モニター -->
+      <rect x="${cx - drawMonW/2}" y="${yMonTop}" width="${drawMonW}" height="${drawMonH}" rx="6" fill="#0f172a" stroke="#0ea5e9" stroke-width="3"/>
+      <text x="${cx}" y="${(yMonTop + yMonBot)/2 - 4}" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">${modelName}</text>
+      <text x="${cx}" y="${(yMonTop + yMonBot)/2 + 11}" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="bold">${chosen.pipe.name} / ${bracket.name}</text>
+
+      <!-- 基準寸法線（強調） -->
+      ${customDimSvg}
+
+      <!-- 補足FL表示（モニター上下端） -->
+      <text x="145" y="${yMonTop - 5}" fill="#334155" font-size="10" font-weight="bold">上端 FL+${Math.round(chosen.actualTopFL)}</text>
+      <text x="145" y="${yMonBot + 14}" fill="#059669" font-size="10.5" font-weight="bold">下端 FL+${Math.round(chosen.actualBottomFL)}</text>
+    `;
+  }
+
+  function drawHoleSvg(data) {
+    const svg = document.getElementById("holeSvg");
+    const { chosen, bracket } = data;
+
+    // 上部拡大図（CH-1B 3穴 × パイプ上 4穴）
+    const ch1bBaseY = 42;
+    const ch1bBotY = 230;
+    const scTop = 0.70;
+
+    const ch1bHoleYs = CH1B_HOLES.map(h => ({
+      ...h,
+      y: ch1bBotY - h.distFromBottom * scTop,
+      active: h.id === chosen.ch1bHole.id
+    }));
+
+    const activeCh1bY = ch1bHoleYs.find(h => h.active).y;
+    const pipeTopY = activeCh1bY - chosen.pTop.distFromTop * scTop;
+
+    const pipeTopHoleYs = PIPE_TOP_HOLES.map(h => ({
+      ...h,
+      y: pipeTopY + h.distFromTop * scTop,
+      active: h.id === chosen.pTop.id
+    }));
+
+    // 下部拡大図（パイプ下 2穴: 下端50mm, 下端150mm）
+    // 見出し文字（y=298）とパイプ下・上穴（下端150mm）が重ならないよう十分な余白を確保
+    const pipeBotTopY = 324;
+    const pipeBotY = 446;
+    const scBot = 0.68;
+
+    const pipeBotHoleYs = PIPE_BOT_HOLES.map(h => ({
+      ...h,
+      y: pipeBotY - h.distFromBottom * scBot,
+      active: h.id === chosen.pBot.id
+    }));
+
+    let ch1bHolesSvg = ch1bHoleYs.map(h => `
+      <circle cx="155" cy="${h.y}" r="${h.active ? 7 : 5}" fill="${h.active ? '#f43f5e' : '#ffffff'}" stroke="${h.active ? '#be123c' : '#64748b'}" stroke-width="2"/>
+      <text x="12" y="${h.y + 4}" fill="${h.active ? '#e11d48' : '#475569'}" font-size="10.5" font-weight="${h.active ? 'bold' : 'normal'}">
+        CH-1B ${h.name} (${h.distFromBottom}mm)
+      </text>
+      <line x1="125" y1="${h.y}" x2="146" y2="${h.y}" stroke="${h.active ? '#f43f5e' : '#94a3b8'}" stroke-dasharray="2,2"/>
+    `).join("");
+
+    let pipeTopHolesSvg = pipeTopHoleYs.map(h => `
+      <circle cx="195" cy="${h.y}" r="${h.active ? 7 : 5}" fill="${h.active ? '#f43f5e' : '#ffffff'}" stroke="${h.active ? '#be123c' : '#64748b'}" stroke-width="2"/>
+      <text x="235" y="${h.y + 4}" fill="${h.active ? '#e11d48' : '#475569'}" font-size="10.5" font-weight="${h.active ? 'bold' : 'normal'}">
+        パイプ上 ${h.name} (${h.distFromTop}mm)
+      </text>
+      <line x1="204" y1="${h.y}" x2="230" y2="${h.y}" stroke="${h.active ? '#f43f5e' : '#94a3b8'}" stroke-dasharray="2,2"/>
+    `).join("");
+
+    let pipeBotHolesSvg = pipeBotHoleYs.map(h => `
+      <circle cx="175" cy="${h.y}" r="${h.active ? 7 : 5}" fill="${h.active ? '#f43f5e' : '#ffffff'}" stroke="${h.active ? '#be123c' : '#64748b'}" stroke-width="2"/>
+      <text x="225" y="${h.y + 4}" fill="${h.active ? '#e11d48' : '#475569'}" font-size="10.5" font-weight="${h.active ? 'bold' : 'normal'}">
+        パイプ下 ${h.name}
+      </text>
+      <line x1="184" y1="${h.y}" x2="220" y2="${h.y}" stroke="${h.active ? '#f43f5e' : '#94a3b8'}" stroke-dasharray="2,2"/>
+    `).join("");
+
+    svg.innerHTML = `
+      <text x="14" y="21" fill="#0284c7" font-size="12" font-weight="bold">【上部接続】CH-1B（3穴）× パイプ上（4穴）</text>
+      <rect x="115" y="${ch1bBaseY}" width="120" height="8" fill="#0284c7" rx="2"/>
+      <rect x="140" y="${ch1bBaseY + 8}" width="70" height="${ch1bBotY - (ch1bBaseY + 8)}" rx="4" fill="rgba(14,165,233,0.16)" stroke="#0284c7" stroke-width="2"/>
+
+      <rect x="153" y="${pipeTopY}" width="44" height="${264 - pipeTopY}" fill="rgba(148,163,184,0.22)" stroke="#475569" stroke-width="2"/>
+      <line x1="153" y1="${pipeTopY}" x2="197" y2="${pipeTopY}" stroke="#10b981" stroke-width="3"/>
+      <text x="205" y="${pipeTopY + 4}" fill="#059669" font-size="10" font-weight="bold">← パイプ上端</text>
+
+      <line x1="132" y1="${activeCh1bY}" x2="218" y2="${activeCh1bY}" stroke="#f43f5e" stroke-width="3.5"/>
+
+      ${ch1bHolesSvg}
+      ${pipeTopHolesSvg}
+
+      <line x1="14" y1="278" x2="406" y2="278" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+      <text x="14" y="300" fill="#0284c7" font-size="12" font-weight="bold">【下部接続】${chosen.pipe.name} 下部（2穴）× ${bracket.name}</text>
+      <rect x="153" y="${pipeBotTopY}" width="44" height="${pipeBotY - pipeBotTopY}" fill="rgba(148,163,184,0.22)" stroke="#475569" stroke-width="2"/>
+      <line x1="153" y1="${pipeBotY}" x2="197" y2="${pipeBotY}" stroke="#10b981" stroke-width="3"/>
+      <text x="78" y="${pipeBotY + 4}" fill="#059669" font-size="10" font-weight="bold">パイプ下端 →</text>
+
+      <rect x="142" y="${pipeBotHoleYs.find(h => h.active).y - 14}" width="66" height="44" rx="5" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" stroke-width="2"/>
+      <line x1="134" y1="${pipeBotHoleYs.find(h => h.active).y}" x2="216" y2="${pipeBotHoleYs.find(h => h.active).y}" stroke="#f43f5e" stroke-width="3.5"/>
+
+      ${pipeBotHolesSvg}
+      <text x="210" y="474" text-anchor="middle" fill="#475569" font-size="11" font-weight="bold">赤ライン：M10ボルト固定位置</text>
+    `;
+  }
+
+  function formatSpecText(data) {
+    const {
+      chosen, modelName, inch, weight, bracket,
+      trussMountPos, heightOriginMode,
+      trussBottomFL, trussTopFL, mountBaseFL, spacerThick
+    } = data;
+
+    const trussCondText = trussMountPos === "top"
+      ? `300角トラス 上面乗せ・貫通 (トラス上端 FL+${Math.round(trussTopFL)}mm ＋ スペーサー ${spacerThick}mm ＝ CH-1B基準面 FL+${Math.round(mountBaseFL)}mm)`
+      : `300角トラス 下面乗せ (トラス上端 FL+${Math.round(trussTopFL)} / 下面 FL+${Math.round(trussBottomFL)}mm ＋ スペーサー ${spacerThick}mm ＝ CH-1B基準面 FL+${Math.round(mountBaseFL)}mm)`;
+
+    const actualStr = formatMetricValue(chosen.actualOriginMetric, heightOriginMode);
+
+    return [
+      `【吊り金具選定君MAX 施工指示書】`,
+      `・対象モニター: ${modelName} (${inch}V型 / ${weight}kg)`,
+      `・吊元条件: ${trussCondText}`,
+      `・使用金具構成: CH-1B ＋ ${chosen.pipe.name} ＋ ${bracket.name}`,
+      `・CH-1B 穴位置 (3穴中): ${chosen.ch1bHole.name}（下端から ${chosen.ch1bHole.distFromBottom}mm）`,
+      `・パイプ上 穴位置 (4穴中): ${chosen.pTop.name}（上端から ${chosen.pTop.distFromTop}mm）`,
+      `・パイプ下 穴位置 (2穴中): ${chosen.pBot.name}`,
+      `・仕上がり高さ: ${actualStr}（下端 FL+${Math.round(chosen.actualBottomFL)}mm / 上端 FL+${Math.round(chosen.actualTopFL)}mm / 目標差 ${chosen.diff >= 0 ? "+" : ""}${Math.round(chosen.diff)}mm）`,
+      `※300角トラスへはUボルト/トラスクランプ固定＋落下防止ワイヤーを必ず併用してください。`
+    ].join("\n");
+  }
+
+  function copyCurrentSpec() {
+    if (!currentBest) return;
+    copyText(formatSpecText(currentBest));
+  }
+
+  function addToProjectList() {
+    if (!currentBest) return;
+    savedItems.push(JSON.parse(JSON.stringify(currentBest)));
+    renderSavedList();
+    showToast("検討リストに追加しました");
+  }
+
+  function removeSavedItem(idx) {
+    savedItems.splice(idx, 1);
+    renderSavedList();
+  }
+
+  function renderSavedList() {
+    const box = document.getElementById("savedList");
+    if (savedItems.length === 0) {
+      box.innerHTML = `<div style="color:var(--muted);font-size:0.78rem;">右上の「＋ 検討リストに追加」で複数台の選定結果を保存できます。</div>`;
+      return;
+    }
+    box.innerHTML = savedItems.map((item, i) => `
+      <div class="saved-item">
+        <div>
+          <strong>${i + 1}. ${item.modelName}</strong>（${item.trussMountPos === "top" ? "上面乗せ" : "下面乗せ"}） → <span style="color:#0284c7;font-weight:800;">${item.chosen.pipe.name} / ${item.bracket.name}</span><br/>
+          <span style="color:var(--muted);">CH-1B:${item.chosen.ch1bHole.name} / 上:${item.chosen.pTop.name} / 下:${item.chosen.pBot.shortName} / ${formatMetricValue(item.chosen.actualOriginMetric, item.heightOriginMode)}</span>
+        </div>
+        <button type="button" onclick="removeSavedItem(${i})" style="padding:4px 8px;background:#fff;border-color:#fca5a5;color:#e11d48;">削除</button>
+      </div>
+    `).join("");
+  }
+
+  function copyAllProjectList() {
+    if (savedItems.length === 0) {
+      showToast("リストが空です");
+      return;
+    }
+    const text = savedItems.map((item, i) => `--- [${i + 1}台目] ---\n` + formatSpecText(item)).join("\n\n");
+    copyText(text);
+  }
+
+  function copyText(str) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(str).then(() => {
+        showToast("クリップボードにコピーしました");
+      }).catch(() => fallbackCopy(str));
+    } else {
+      fallbackCopy(str);
+    }
+  }
+
+  function fallbackCopy(str) {
+    const ta = document.createElement("textarea");
+    ta.value = str;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showToast("クリップボードにコピーしました");
+    } catch (e) {
+      showToast("コピーに失敗しました");
+    }
+    document.body.removeChild(ta);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2000);
+  }
+
+  initPresets();
+  recalc();
+</script>
+</body>
+</html>
